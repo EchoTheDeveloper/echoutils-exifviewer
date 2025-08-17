@@ -1,4 +1,5 @@
 import os, sys, subprocess
+import requests, json
 from PIL import Image
 from PIL.ExifTags import TAGS
 
@@ -8,18 +9,28 @@ file = 404
 output_location = None
 print_to_console = False
 
-default_exif_save = "exported.exif"
-default_text_editor = "nano"
+url = "https://raw.githubusercontent.com/EchoTheDeveloper/echoutils-exifviewer/refs/heads/main/default-config.json"
+
 default_config_location = "~/.config/echo-utils/exif-viewer/config.json"
 
 if not os.path.exists(default_config_location):
     with open (default_config_location, "w") as f:
-        // TODO: get default config from github and write it.
+        response = requests.get(url)
+        if response.status_code == 200:
+            f.write(response.content)
+        else:
+            print("Config file not found and failed to fetch default config over wifi")
+            print(response.status_code)
+
+with open(default_config_location, "r") as f:
+    config = json.load(f.read())
+
+config_editor = config["default-editor"]
 
 for i in range (0, len(sys.argv)):
     arg = sys.argv[i]
     if arg == "config":
-        subprocess.run
+        subprocess.run(f"{config_editor} {default_config_location")
     elif (arg.startswith("--") or arg.startswith("-")) and arg in VALID_COMMANDS:
         command = arg
         content = sys.argv[i+1]
