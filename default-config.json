@@ -1,0 +1,5 @@
+{
+  "default-editor": "nano",
+  "config-dir": "~/.config/echo-utils/exif-viewer/config.json",
+  "default-exif-out": "output.exif"
+}
