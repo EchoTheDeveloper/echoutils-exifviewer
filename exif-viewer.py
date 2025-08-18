@@ -14,7 +14,8 @@ url = "https://raw.githubusercontent.com/EchoTheDeveloper/echoutils-exifviewer/r
 default_config_location = "~/.config/echo-utils/exif-viewer/config.json"
 
 if not os.path.exists(default_config_location):
-    with open (default_config_location, "w") as f:
+    subprocess.run(f"touch {default_config_location}")
+    with open (default_config_location, "wb") as f:
         response = requests.get(url)
         if response.status_code == 200:
             f.write(response.content)
@@ -23,14 +24,15 @@ if not os.path.exists(default_config_location):
             print(response.status_code)
 
 with open(default_config_location, "r") as f:
-    config = json.load(f.read())
+    config = json.load(f)
 
 config_editor = config["default-editor"]
+default_exif_save = config["default-exif-out"]
 
 for i in range (0, len(sys.argv)):
     arg = sys.argv[i]
     if arg == "config":
-        subprocess.run(f"{config_editor} {default_config_location")
+        subprocess.run(f"{config_editor} {default_config_location}")
     elif (arg.startswith("--") or arg.startswith("-")) and arg in VALID_COMMANDS:
         command = arg
         content = sys.argv[i+1]
@@ -62,4 +64,11 @@ exif_data = image.getexif()
 
 if print_to_console:
     print(exif_data)
-        
+
+if file != 404:
+    if os.path.exists(file):
+        print("ERROR: OUTPUT FILE EXISTS")
+        sys.exit()
+    else:
+        with open(file, "w")as f:
+            f.write(str(exif_data))
